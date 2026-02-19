@@ -126,11 +126,18 @@ SEED_PROJECTS = [
     },
 ]
 
+SEED_ADMIN_EMAIL = os.environ.get("SEED_ADMIN_EMAIL", "zhouzejun1147@gmail.com")
+SEED_ADMIN_NAME = os.environ.get("SEED_ADMIN_NAME", "ZZ")
+SEED_ADMIN_PASSWORD = os.environ.get("SEED_ADMIN_PASSWORD")
+
+if not SEED_ADMIN_PASSWORD:
+    raise RuntimeError("SEED_ADMIN_PASSWORD env var is required. Set it in docker-compose.yml or .env")
+
 SEED_ADMIN = {
     "user_id": str(uuid.uuid4()),
-    "email": "zhouzejun1147@gmail.com",
-    "display_name": "ZZ",
-    "hashed_password": pwd_context.hash("1234567890!"),
+    "email": SEED_ADMIN_EMAIL,
+    "display_name": SEED_ADMIN_NAME,
+    "hashed_password": pwd_context.hash(SEED_ADMIN_PASSWORD),
     "role": "admin",
     "created_at": datetime.utcnow().isoformat(),
 }

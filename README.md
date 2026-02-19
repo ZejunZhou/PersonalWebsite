@@ -72,13 +72,15 @@ docker compose up --build
 
 The backend auto-creates 5 DynamoDB tables and seeds experience/project/blog data + an admin account on startup.
 
-### Seed Admin Credentials
+### Seed Admin Setup
 
-| Field    | Value                     |
-|----------|---------------------------|
-| Email    | `zhouzejun1147@gmail.com` |
-| Password | `1234567890!`             |
-| Role     | `admin`                   |
+Create a `.env` file in the project root (gitignored):
+
+```bash
+SEED_ADMIN_PASSWORD=your-secure-password-here
+```
+
+The seed script reads the password from this env var — it is **never hardcoded in source code**. Email and display name default to `zhouzejun1147@gmail.com` / `ZZ` (configurable via `SEED_ADMIN_EMAIL` and `SEED_ADMIN_NAME`).
 
 ### Hot-Reload Development
 

@@ -105,16 +105,23 @@ docker compose down -v    # stop + remove volumes (N/A since in-memory)
 
 ## Seed Admin Account
 
-A pre-configured admin account is created by the seed script on every startup:
+A pre-configured admin account is created by the seed script on every startup. The password is **never hardcoded in source** — it is read from the `SEED_ADMIN_PASSWORD` environment variable.
 
-| Field    | Value                        |
-|----------|------------------------------|
-| Email    | `zhouzejun1147@gmail.com`    |
-| Name     | `ZZ`                         |
-| Password | `1234567890!`                |
-| Role     | `admin`                      |
+| Field    | Source                                  |
+|----------|-----------------------------------------|
+| Email    | `SEED_ADMIN_EMAIL` env (default: `zhouzejun1147@gmail.com`) |
+| Name     | `SEED_ADMIN_NAME` env (default: `ZZ`)  |
+| Password | `SEED_ADMIN_PASSWORD` env (**required**, set in `.env`) |
+| Role     | `admin`                                 |
 
-Password is bcrypt-hashed before insertion. You can login immediately at `/login` with these credentials.
+### Setup
+
+1. Create a `.env` file in the project root (already in `.gitignore`):
+   ```bash
+   SEED_ADMIN_PASSWORD=your-secure-password-here
+   ```
+2. `docker compose up --build` reads `.env` automatically and passes it to the backend container.
+3. Password is bcrypt-hashed before insertion into DynamoDB.
 
 ---
 

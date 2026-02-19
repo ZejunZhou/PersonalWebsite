@@ -26,6 +26,9 @@ services:
       - AWS_SECRET_ACCESS_KEY=local
       - JWT_SECRET_KEY=change-me-in-production
       - ADMIN_EMAILS=zhouzejun1147@gmail.com
+      - SEED_ADMIN_EMAIL=zhouzejun1147@gmail.com
+      - SEED_ADMIN_NAME=ZZ
+      - SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD}
       - CORS_ORIGINS=http://localhost:3000
     depends_on:
       - dynamodb-local
