@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: personalsite-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend-service
+      dockerfile: Dockerfile
+    container_name: personalsite-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend-service:/app
+    environment:
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - JWT_SECRET_KEY=change-me-in-production
+      - ADMIN_EMAILS=zhouzejun1147@gmail.com
+      - CORS_ORIGINS=http://localhost:3000
+    depends_on:
+      - dynamodb-local
+    command: sh -c "python scripts/seed_db.py && uvicorn main:app --host 0.0.0.0 --port 8080 --reload"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend-portal
+      dockerfile: Dockerfile
+    container_name: personalsite-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-portal/src:/app/src
+      - ./frontend-portal/public:/app/public
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
