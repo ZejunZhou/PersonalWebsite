@@ -18,11 +18,11 @@ const Footer: React.FC = () => {
       <Container maxWidth="lg">
         <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
           <Typography variant="body2" color="text.secondary">
-            &copy; {new Date().getFullYear()} Portfolio. Built with React &amp; FastAPI.
+            &copy; {new Date().getFullYear()} Zejun Zhou. 
           </Typography>
           <Stack direction="row" spacing={1}>
             <IconButton
-              href="https://github.com"
+              href="https://github.com/zhouzejun"
               target="_blank"
               size="small"
               sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
               <FontAwesomeIcon icon={faGithub} />
             </IconButton>
             <IconButton
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/zhouzejun"
               target="_blank"
               size="small"
               sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
               <FontAwesomeIcon icon={faLinkedin} />
             </IconButton>
             <IconButton
-              href="mailto:contact@example.com"
+              href="mailto:zhouzejun1147@gmail.com"
               size="small"
               sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
             >

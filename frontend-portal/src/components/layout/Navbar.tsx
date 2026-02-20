@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
           >
             <CodeIcon sx={{ color: "primary.main", fontSize: 28 }} />
             <Typography variant="h6" sx={{ fontWeight: 700, color: "text.primary" }}>
-              Portfolio
+              Zejun's Portfolio
             </Typography>
           </Box>
 
