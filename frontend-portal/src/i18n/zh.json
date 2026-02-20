@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "首页",
+    "experience": "工作经历",
+    "projects": "项目",
+    "blog": "博客",
+    "login": "登录",
+    "logout": "退出",
+    "siteTitle": "Zejun 的作品集"
+  },
+  "home": {
+    "role": "软件开发工程师",
+    "title": "Zejun 的",
+    "titleHighlight": "作品集",
+    "intro": "你好！我是周泽郡，目前在布朗大学攻读计算机科学与数据科学硕士学位（第二年）。工作之余，我喜欢游泳、打羽毛球，也热爱徒步。如果你想一起玩，欢迎联系我！",
+    "viewExperience": "查看经历",
+    "projects": "项目",
+    "blog": "博客",
+    "whatIDo": "我做什么",
+    "whatIDoSub": "我参与过的领域和解决的问题一览。",
+    "techStack": "技术栈",
+    "letsConnect": "联系我",
+    "letsConnectSub": "想找一个合作伙伴，或者聊聊技术、徒步路线、约一场羽毛球？给我发邮件吧！",
+    "getInTouch": "发送邮件",
+    "highlight": {
+      "cloud": "云与分布式系统",
+      "cloudDesc": "在 AWS 上构建可扩展的数据管道，利用 ECS、S3 和 DynamoDB 处理 100 个账户中的 30 万+ 文档。",
+      "devops": "DevOps & 基础设施",
+      "devopsDesc": "在 Kubernetes GPU 集群上开发心跳检测机制，减少 30% 的 GPU 分配故障，并构建自定义监控插件。",
+      "fullstack": "全栈开发",
+      "fullstackDesc": "使用 React + Flask + Cassandra 开发研究工具，论文发表于 AAAI Symposium Series 2024。",
+      "data": "数据 & 机器学习系统",
+      "dataDesc": "构建基于向量嵌入的语义搜索引擎、MapReduce 管道和 RAG 检索系统。"
+    }
+  },
+  "experience": {
+    "title": "工作经历",
+    "subtitle": "涵盖云计算、DevOps 和全栈开发的专业岗位与实习经历。",
+    "loadError": "加载工作经历失败。"
+  },
+  "projects": {
+    "title": "项目",
+    "subtitle": "分布式系统、机器学习基础设施和 Web 开发相关的个人项目和研究工作。",
+    "loadError": "加载项目失败。"
+  },
+  "blog": {
+    "title": "博客",
+    "subtitle": "技术文章、思考和深度探讨。",
+    "newPost": "新文章",
+    "noPosts": "暂无博客文章。",
+    "loadError": "加载博客失败。",
+    "backToBlog": "返回博客",
+    "by": "作者",
+    "comments": "评论",
+    "noComments": "暂无评论，来做第一个留言的人吧！",
+    "writeComment": "写一条评论...",
+    "loginToComment": "登录后即可评论",
+    "deleteConfirm": "确定要删除这篇文章吗？",
+    "deleteError": "删除文章失败。",
+    "commentError": "发表评论失败。",
+    "deleteCommentError": "删除评论失败。"
+  },
+  "blogCreate": {
+    "title": "新建博客文章",
+    "fieldTitle": "标题",
+    "fieldSummary": "摘要",
+    "fieldAddTag": "添加标签",
+    "addBtn": "添加",
+    "fieldContent": "正文（支持 Markdown）",
+    "publishing": "发布中...",
+    "publish": "发布",
+    "cancel": "取消",
+    "createError": "创建文章失败。"
+  },
+  "login": {
+    "welcome": "欢迎",
+    "subtitle": "登录后可以在博客下留言",
+    "tabLogin": "登录",
+    "tabRegister": "注册",
+    "email": "邮箱",
+    "displayName": "显示名称",
+    "password": "密码",
+    "pleaseWait": "请稍候...",
+    "signIn": "登录",
+    "createAccount": "注册账号",
+    "authError": "认证失败。"
+  },
+  "footer": {
+    "builtWith": "周泽郡"
+  }
+}

@@ -1,24 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  Chip,
-  Stack,
-  Skeleton,
-  Alert,
-  Button,
-  IconButton,
-  TextField,
-  Card,
-  CardContent,
-  Divider,
-  Avatar,
+  Box, Container, Typography, Chip, Stack, Skeleton, Alert, Button,
+  IconButton, TextField, Card, CardContent, Divider, Avatar,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../services/api";
 
@@ -44,6 +33,7 @@ interface Comment {
 }
 
 const BlogDetailPage: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, user } = useAuth();
@@ -54,27 +44,26 @@ const BlogDetailPage: React.FC = () => {
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const dateLocale = i18n.language === "zh" ? "zh-CN" : "en-US";
+
   useEffect(() => {
     if (!postId) return;
-    Promise.all([
-      apiClient.getBlogPost(postId),
-      apiClient.getComments(postId),
-    ])
+    Promise.all([apiClient.getBlogPost(postId), apiClient.getComments(postId)])
       .then(([postRes, commentsRes]) => {
         setPost(postRes.data);
         setComments(commentsRes.data.comments);
       })
-      .catch(() => setError("Failed to load blog post."))
+      .catch(() => setError(t("blog.loadError")))
       .finally(() => setLoading(false));
-  }, [postId]);
+  }, [postId, t]);
 
   const handleDeletePost = async () => {
-    if (!postId || !window.confirm("Are you sure you want to delete this post?")) return;
+    if (!postId || !window.confirm(t("blog.deleteConfirm"))) return;
     try {
       await apiClient.deleteBlogPost(postId);
       navigate("/blog");
     } catch {
-      setError("Failed to delete post.");
+      setError(t("blog.deleteError"));
     }
   };
 
@@ -87,7 +76,7 @@ const BlogDetailPage: React.FC = () => {
       setComments([...comments, res.data]);
       setCommentText("");
     } catch {
-      setError("Failed to post comment.");
+      setError(t("blog.commentError"));
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +88,7 @@ const BlogDetailPage: React.FC = () => {
       await apiClient.deleteComment(postId, commentId);
       setComments(comments.filter((c) => c.comment_id !== commentId));
     } catch {
-      setError("Failed to delete comment.");
+      setError(t("blog.deleteCommentError"));
     }
   };
 
@@ -119,7 +108,7 @@ const BlogDetailPage: React.FC = () => {
   if (error && !post) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Alert severity="error">{error || "Post not found."}</Alert>
+        <Alert severity="error">{error}</Alert>
       </Container>
     );
   }
@@ -131,7 +120,7 @@ const BlogDetailPage: React.FC = () => {
       <Container maxWidth="md">
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
           <Button startIcon={<ArrowBackIcon />} onClick={() => navigate("/blog")} sx={{ color: "text.secondary" }}>
-            Back to Blog
+            {t("blog.backToBlog")}
           </Button>
           {isAdmin && (
             <IconButton onClick={handleDeletePost} sx={{ color: "error.main" }}>
@@ -140,67 +129,40 @@ const BlogDetailPage: React.FC = () => {
           )}
         </Box>
 
-        <Typography variant="h2" sx={{ mb: 2 }}>
-          {post.title}
-        </Typography>
+        <Typography variant="h2" sx={{ mb: 2 }}>{post.title}</Typography>
 
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }} flexWrap="wrap" useFlexGap>
           {post.tags.map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              size="small"
-              variant="outlined"
-              sx={{ borderColor: "primary.dark", color: "primary.light" }}
-            />
+            <Chip key={tag} label={tag} size="small" variant="outlined" sx={{ borderColor: "primary.dark", color: "primary.light" }} />
           ))}
         </Stack>
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 5 }}>
-          By {post.author_name} &middot;{" "}
-          {new Date(post.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
+          {t("blog.by")} {post.author_name} &middot;{" "}
+          {new Date(post.created_at).toLocaleDateString(dateLocale, { year: "numeric", month: "long", day: "numeric" })}
         </Typography>
 
-        <Box
-          sx={{
-            whiteSpace: "pre-wrap",
-            lineHeight: 1.8,
-            color: "text.secondary",
-            mb: 6,
-          }}
-        >
+        <Box sx={{ whiteSpace: "pre-wrap", lineHeight: 1.8, color: "text.secondary", mb: 6 }}>
           {post.content}
         </Box>
 
-        {/* Comments Section */}
         <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mb: 4 }} />
 
         <Typography variant="h3" sx={{ mb: 3 }}>
-          Comments ({comments.length})
+          {t("blog.comments")} ({comments.length})
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>}
 
         {comments.length === 0 && (
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            No comments yet. Be the first to share your thoughts!
+            {t("blog.noComments")}
           </Typography>
         )}
 
         <Stack spacing={2} sx={{ mb: 4 }}>
           {comments.map((comment) => (
-            <Card
-              key={comment.comment_id}
-              sx={{ border: "1px solid rgba(255,255,255,0.06)" }}
-            >
+            <Card key={comment.comment_id} sx={{ border: "1px solid rgba(255,255,255,0.06)" }}>
               <CardContent sx={{ py: 2, px: 2.5, "&:last-child": { pb: 2 } }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", mb: 1 }}>
@@ -208,26 +170,14 @@ const BlogDetailPage: React.FC = () => {
                       {comment.display_name.charAt(0).toUpperCase()}
                     </Avatar>
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                        {comment.display_name}
-                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>{comment.display_name}</Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {new Date(comment.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(comment.created_at).toLocaleDateString(dateLocale, { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                       </Typography>
                     </Box>
                   </Box>
                   {canDeleteComment(comment) && (
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDeleteComment(comment.comment_id)}
-                      sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }}
-                    >
+                    <IconButton size="small" onClick={() => handleDeleteComment(comment.comment_id)} sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }}>
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   )}
@@ -240,26 +190,16 @@ const BlogDetailPage: React.FC = () => {
           ))}
         </Stack>
 
-        {/* Comment Input */}
         {isAuthenticated ? (
           <Box component="form" onSubmit={handleSubmitComment}>
             <Stack direction="row" spacing={1.5} alignItems="flex-start">
               <TextField
-                placeholder="Write a comment..."
+                placeholder={t("blog.writeComment")}
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                fullWidth
-                multiline
-                minRows={2}
-                maxRows={6}
-                size="small"
+                fullWidth multiline minRows={2} maxRows={6} size="small"
               />
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={submitting || !commentText.trim()}
-                sx={{ minWidth: 48, px: 2, height: 40, mt: "4px !important" }}
-              >
+              <Button type="submit" variant="contained" disabled={submitting || !commentText.trim()} sx={{ minWidth: 48, px: 2, height: 40, mt: "4px !important" }}>
                 <SendIcon fontSize="small" />
               </Button>
             </Stack>
@@ -267,10 +207,10 @@ const BlogDetailPage: React.FC = () => {
         ) : (
           <Card sx={{ border: "1px solid rgba(255,255,255,0.06)", textAlign: "center", py: 3 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-              Log in to leave a comment
+              {t("blog.loginToComment")}
             </Typography>
             <Button component={Link} to="/login" variant="outlined" size="small">
-              Login
+              {t("nav.login")}
             </Button>
           </Card>
         )}

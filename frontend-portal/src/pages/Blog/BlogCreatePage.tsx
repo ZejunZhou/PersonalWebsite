@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  Stack,
-  Chip,
+  Box, Container, Typography, TextField, Button, Alert, Stack, Chip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import apiClient, { extractErrorMessage } from "../../services/api";
 
 const BlogCreatePage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -50,7 +45,7 @@ const BlogCreatePage: React.FC = () => {
       await apiClient.createBlogPost({ title, summary, content, tags });
       navigate("/blog");
     } catch (err: any) {
-      setError(extractErrorMessage(err, "Failed to create post."));
+      setError(extractErrorMessage(err, t("blogCreate.createError")));
     } finally {
       setSubmitting(false);
     }
@@ -59,80 +54,38 @@ const BlogCreatePage: React.FC = () => {
   return (
     <Box sx={{ py: 8 }}>
       <Container maxWidth="md">
-        <Typography variant="h2" sx={{ mb: 4 }}>
-          New Blog Post
-        </Typography>
+        <Typography variant="h2" sx={{ mb: 4 }}>{t("blogCreate.title")}</Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
+        {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={3}>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Summary"
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              required
-              fullWidth
-              multiline
-              rows={2}
-            />
+            <TextField label={t("blogCreate.fieldTitle")} value={title} onChange={(e) => setTitle(e.target.value)} required fullWidth />
+            <TextField label={t("blogCreate.fieldSummary")} value={summary} onChange={(e) => setSummary(e.target.value)} required fullWidth multiline rows={2} />
             <Box>
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
                 <TextField
-                  label="Add Tag"
+                  label={t("blogCreate.fieldAddTag")}
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddTag();
-                    }
-                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddTag(); } }}
                   size="small"
                 />
-                <Button variant="outlined" size="small" onClick={handleAddTag}>
-                  Add
-                </Button>
+                <Button variant="outlined" size="small" onClick={handleAddTag}>{t("blogCreate.addBtn")}</Button>
               </Stack>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {tags.map((tag) => (
-                  <Chip
-                    key={tag}
-                    label={tag}
-                    onDelete={() => handleRemoveTag(tag)}
-                    size="small"
-                    variant="outlined"
-                    sx={{ borderColor: "primary.dark", color: "primary.light" }}
-                  />
+                  <Chip key={tag} label={tag} onDelete={() => handleRemoveTag(tag)} size="small" variant="outlined" sx={{ borderColor: "primary.dark", color: "primary.light" }} />
                 ))}
               </Stack>
             </Box>
-            <TextField
-              label="Content (Markdown supported)"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-              fullWidth
-              multiline
-              rows={16}
-            />
+            <TextField label={t("blogCreate.fieldContent")} value={content} onChange={(e) => setContent(e.target.value)} required fullWidth multiline rows={16} />
             <Stack direction="row" spacing={2}>
               <Button type="submit" variant="contained" size="large" disabled={submitting}>
-                {submitting ? "Publishing..." : "Publish"}
+                {submitting ? t("blogCreate.publishing") : t("blogCreate.publish")}
               </Button>
               <Button variant="outlined" onClick={() => navigate("/blog")} sx={{ borderColor: "rgba(255,255,255,0.2)" }}>
-                Cancel
+                {t("blogCreate.cancel")}
               </Button>
             </Stack>
           </Stack>

@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "Home",
+    "experience": "Experience",
+    "projects": "Projects",
+    "blog": "Blog",
+    "login": "Login",
+    "logout": "Logout",
+    "siteTitle": "Zejun's Portfolio"
+  },
+  "home": {
+    "role": "Software Development Engineer",
+    "title": "Zejun's",
+    "titleHighlight": "Portfolio",
+    "intro": "Hi! I am Zejun Zhou, a second year master student currently pursuing a Master of Science degree in Computer Science and Data Science at Brown University. Outside work, I like to swim and play badminton. I am also a lover of hiking. Reach me out if you want to hang out together!",
+    "viewExperience": "View Experience",
+    "projects": "Projects",
+    "blog": "Blog",
+    "whatIDo": "What I Do",
+    "whatIDoSub": "A snapshot of the domains and problems I've worked on.",
+    "techStack": "Tech Stack",
+    "letsConnect": "Let's Connect",
+    "letsConnectSub": "Looking for a collaborator, or just want to chat about tech, hiking trails, or a badminton match? Drop me a line!",
+    "getInTouch": "Get in Touch",
+    "highlight": {
+      "cloud": "Cloud & Distributed Systems",
+      "cloudDesc": "Built scalable pipelines on AWS processing 300K+ documents across 100 accounts using ECS, S3, and DynamoDB.",
+      "devops": "DevOps & Infrastructure",
+      "devopsDesc": "Developed GPU health checks on Kubernetes clusters, reducing allocation failures by 30% with custom monitoring plugins.",
+      "fullstack": "Full-Stack Development",
+      "fullstackDesc": "Created research tools with React + Flask + Cassandra, published at AAAI Symposium Series 2024.",
+      "data": "Data & ML Systems",
+      "dataDesc": "Built semantic search engines with vector embeddings, MapReduce pipelines, and RAG-based retrieval systems."
+    }
+  },
+  "experience": {
+    "title": "Experience",
+    "subtitle": "Professional roles and internships across cloud, DevOps, and full-stack development.",
+    "loadError": "Failed to load experiences."
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Side projects and research work in distributed systems, ML infrastructure, and web development.",
+    "loadError": "Failed to load projects."
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Technical writeups, reflections, and deep dives.",
+    "newPost": "New Post",
+    "noPosts": "No blog posts yet.",
+    "loadError": "Failed to load blog posts.",
+    "backToBlog": "Back to Blog",
+    "by": "By",
+    "comments": "Comments",
+    "noComments": "No comments yet. Be the first to share your thoughts!",
+    "writeComment": "Write a comment...",
+    "loginToComment": "Log in to leave a comment",
+    "deleteConfirm": "Are you sure you want to delete this post?",
+    "deleteError": "Failed to delete post.",
+    "commentError": "Failed to post comment.",
+    "deleteCommentError": "Failed to delete comment."
+  },
+  "blogCreate": {
+    "title": "New Blog Post",
+    "fieldTitle": "Title",
+    "fieldSummary": "Summary",
+    "fieldAddTag": "Add Tag",
+    "addBtn": "Add",
+    "fieldContent": "Content (Markdown supported)",
+    "publishing": "Publishing...",
+    "publish": "Publish",
+    "cancel": "Cancel",
+    "createError": "Failed to create post."
+  },
+  "login": {
+    "welcome": "Welcome",
+    "subtitle": "Sign in to comment on blog posts",
+    "tabLogin": "Login",
+    "tabRegister": "Register",
+    "email": "Email",
+    "displayName": "Display Name",
+    "password": "Password",
+    "pleaseWait": "Please wait...",
+    "signIn": "Sign In",
+    "createAccount": "Create Account",
+    "authError": "Authentication failed."
+  },
+  "footer": {
+    "builtWith": "Zejun Zhou."
+  }
+}
