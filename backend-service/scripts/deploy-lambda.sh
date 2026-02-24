@@ -9,7 +9,8 @@ set -euo pipefail
 #
 # Prerequisites:
 #   - AWS CLI configured (aws configure)
-#   - Python 3.11+ with pip
+#   - Docker (for cross-platform Lambda packaging)
+#   - Python 3.11+ with pip (for local seed step only)
 #   - zip utility
 #
 # Usage:
@@ -137,12 +138,24 @@ POLICY
     sleep 10
 fi
 
-# ── Step 2: Package ─────────────────────────────────────────────────────────
-echo "[2/5] Packaging Lambda..."
+# ── Step 2: Package (Docker-based for Linux-compatible wheels) ──────────────
+echo "[2/6] Packaging Lambda..."
 rm -rf "${BUILD_DIR}" "${ZIP_PATH}"
 mkdir -p "${BUILD_DIR}"
 
-pip install -q -r "${PROJECT_DIR}/requirements.txt" -t "${BUILD_DIR}/" 2>/dev/null
+if ! command -v docker &> /dev/null; then
+    echo "  ERROR: Docker is required for cross-platform packaging."
+    echo "  pip install on macOS produces darwin wheels that crash on Lambda."
+    exit 1
+fi
+
+echo "  Installing dependencies via Docker (Amazon Linux x86_64)..."
+docker run --rm --platform linux/amd64 \
+    -v "${PROJECT_DIR}:/var/task" \
+    --entrypoint "" \
+    public.ecr.aws/lambda/python:3.11 \
+    pip install -q -r /var/task/requirements.txt -t /var/task/.build/
+
 cp -r "${PROJECT_DIR}/app" "${PROJECT_DIR}/main.py" "${PROJECT_DIR}/handler.py" "${BUILD_DIR}/"
 
 (cd "${BUILD_DIR}" && zip -r9q "${ZIP_PATH}" .)
@@ -158,7 +171,6 @@ ENV_JSON=$(cat <<EOF
 {
   "Variables": {
     "DEPLOY_ENV": "cloud",
-    "AWS_DEFAULT_REGION": "${AWS_REGION}",
     "JWT_SECRET_KEY": "${JWT_SECRET_KEY}",
     "ADMIN_EMAILS": "${ADMIN_EMAILS}",
     "CORS_ORIGINS": "${CORS_ORIGINS}",
@@ -242,11 +254,15 @@ if [ "${SKIP_SEED:-false}" = "true" ]; then
     echo "[5/5] Skipping DB seed (SKIP_SEED=true)."
 else
     echo "[5/5] Seeding cloud DynamoDB..."
-    (cd "${PROJECT_DIR}" && \
-        DEPLOY_ENV=cloud \
-        AWS_DEFAULT_REGION="${AWS_REGION}" \
-        SEED_ADMIN_PASSWORD="${SEED_ADMIN_PASSWORD}" \
-        python scripts/seed_db.py)
+    docker run --rm \
+        -v "${PROJECT_DIR}:/var/task" \
+        -v "${HOME}/.aws:/root/.aws:ro" \
+        -e DEPLOY_ENV=cloud \
+        -e AWS_DEFAULT_REGION="${AWS_REGION}" \
+        -e SEED_ADMIN_PASSWORD="${SEED_ADMIN_PASSWORD}" \
+        --entrypoint "" \
+        public.ecr.aws/lambda/python:3.11 \
+        sh -c "pip install -q -r /var/task/requirements.txt && python /var/task/scripts/seed_db.py"
 fi
 
 # ── Cleanup ─────────────────────────────────────────────────────────────────
