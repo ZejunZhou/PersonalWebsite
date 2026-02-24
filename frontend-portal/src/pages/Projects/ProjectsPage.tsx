@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box, Container, Typography, Card, CardContent, Chip, Stack, IconButton, Skeleton, Alert,
+  Box, Container, Typography, Card, CardContent, Chip, Stack, IconButton, Skeleton, Alert, Button,
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import LaunchIcon from "@mui/icons-material/Launch";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../services/api";
 
 interface Project {
@@ -21,6 +25,8 @@ interface Project {
 
 const ProjectsPage: React.FC = () => {
   const { t } = useTranslation();
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,10 +39,27 @@ const ProjectsPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [t]);
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm(t("projAdmin.deleteConfirm"))) return;
+    try {
+      await apiClient.deleteProject(id);
+      setProjects(projects.filter((p) => p.project_id !== id));
+    } catch {
+      setError(t("projAdmin.deleteError"));
+    }
+  };
+
   return (
     <Box sx={{ py: 8 }}>
       <Container maxWidth="md">
-        <Typography variant="h2" sx={{ mb: 1 }}>{t("projects.title")}</Typography>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+          <Typography variant="h2">{t("projects.title")}</Typography>
+          {isAdmin && (
+            <Button variant="contained" size="small" onClick={() => navigate("/projects/new")}>
+              {t("projAdmin.addBtn")}
+            </Button>
+          )}
+        </Box>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 6 }}>
           {t("projects.subtitle")}
         </Typography>
@@ -72,6 +95,16 @@ const ProjectsPage: React.FC = () => {
                         <IconButton href={proj.live_url} target="_blank" size="small" sx={{ color: "text.secondary" }}>
                           <LaunchIcon fontSize="small" />
                         </IconButton>
+                      )}
+                      {isAdmin && (
+                        <>
+                          <IconButton size="small" onClick={() => navigate(`/projects/${proj.project_id}/edit`)} sx={{ color: "primary.main" }}>
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" onClick={() => handleDelete(proj.project_id)} sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </>
                       )}
                     </Box>
                   </Box>

@@ -1,6 +1,6 @@
 # Codebase Guide — Folder-by-Folder
 
-> Last updated: 2026-02-19
+> Last updated: 2026-02-20
 >
 > This document explains every folder and key file in the project so a new developer can orient quickly.
 
@@ -159,25 +159,31 @@ frontend-portal/
     │   │                      # Each folder = one route. Contains the main page component.
     │   │
     │   ├── Home/
-    │   │   └── HomePage.tsx   # Hero section ("Building Scalable Systems & Products"),
-    │   │                      # 4 highlight cards, tech stack chips.
+    │   │   └── HomePage.tsx   # Hero section with photo, self-intro,
+    │   │                      # 4 highlight cards, tech stack chips, CTA.
     │   │
     │   ├── Experience/
-    │   │   └── ExperiencePage.tsx  # Fetches GET /api/experiences, renders timeline
-    │   │                          # cards with company, role, location, date, bullets.
+    │   │   ├── ExperiencePage.tsx      # Fetches GET /api/experiences, renders timeline
+    │   │   │                          # cards. Admin sees Add/Edit/Delete buttons.
+    │   │   ├── ExperienceCreatePage.tsx  # Admin form: company, role, location, dates,
+    │   │   │                             # bullets (dynamic list), order.
+    │   │   └── ExperienceEditPage.tsx    # Same form pre-filled from existing data.
     │   │
     │   ├── Projects/
-    │   │   └── ProjectsPage.tsx   # Fetches GET /api/projects, renders cards with
-    │   │                          # tech stack chips, GitHub/live links, bullets.
+    │   │   ├── ProjectsPage.tsx       # Fetches GET /api/projects, renders cards with
+    │   │   │                          # tech stack chips, links. Admin sees CRUD buttons.
+    │   │   ├── ProjectCreatePage.tsx   # Admin form: title, tech_stack, date_range,
+    │   │   │                          # bullets, github_url, live_url, order.
+    │   │   └── ProjectEditPage.tsx     # Same form pre-filled from existing data.
     │   │
     │   ├── Blog/
     │   │   ├── BlogPage.tsx       # Lists published posts (public). "New Post" button
     │   │   │                      # only visible if isAdmin.
-    │   │   ├── BlogDetailPage.tsx # Single post view + full comments section.
-    │   │   │                      # Delete post button (admin only).
-    │   │   │                      # Comment form (logged-in users) or "Log in" prompt.
-    │   │   │                      # Delete comment (owner or admin).
-    │   │   └── BlogCreatePage.tsx # Form: title, summary, tags, content. Admin only.
+    │   │   ├── BlogDetailPage.tsx # Single post view rendered as **Markdown** via
+    │   │   │                      # react-markdown + remark-gfm. Edit/Delete buttons
+    │   │   │                      # (admin only). Comment section with form.
+    │   │   ├── BlogCreatePage.tsx # Form: title, summary, tags, content. Admin only.
+    │   │   └── BlogEditPage.tsx   # Same form pre-filled. Calls PUT /api/blog/{id}.
     │   │
     │   └── Login/
     │       └── LoginPage.tsx  # Tabbed Login / Register form. On success, redirects

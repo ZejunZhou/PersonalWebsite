@@ -13,10 +13,15 @@ import Footer from "./components/layout/Footer";
 
 import HomePage from "./pages/Home/HomePage";
 import ExperiencePage from "./pages/Experience/ExperiencePage";
+import ExperienceCreatePage from "./pages/Experience/ExperienceCreatePage";
+import ExperienceEditPage from "./pages/Experience/ExperienceEditPage";
 import ProjectsPage from "./pages/Projects/ProjectsPage";
+import ProjectCreatePage from "./pages/Projects/ProjectCreatePage";
+import ProjectEditPage from "./pages/Projects/ProjectEditPage";
 import BlogPage from "./pages/Blog/BlogPage";
 import BlogDetailPage from "./pages/Blog/BlogDetailPage";
 import BlogCreatePage from "./pages/Blog/BlogCreatePage";
+import BlogEditPage from "./pages/Blog/BlogEditPage";
 import LoginPage from "./pages/Login/LoginPage";
 
 const App: React.FC = () => {
@@ -31,9 +36,14 @@ const App: React.FC = () => {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/experience" element={<ExperiencePage />} />
+                <Route path="/experience/new" element={<ExperienceCreatePage />} />
+                <Route path="/experience/:id/edit" element={<ExperienceEditPage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/projects/new" element={<ProjectCreatePage />} />
+                <Route path="/projects/:id/edit" element={<ProjectEditPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/blog/new" element={<BlogCreatePage />} />
+                <Route path="/blog/:postId/edit" element={<BlogEditPage />} />
                 <Route path="/blog/:postId" element={<BlogDetailPage />} />
                 <Route path="/login" element={<LoginPage />} />
               </Routes>

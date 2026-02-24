@@ -1,6 +1,6 @@
 # Personal Website — Portfolio & Blog Platform
 
-> Last updated: 2026-02-19
+> Last updated: 2026-02-20
 
 A full-stack personal website built with a **React** frontend and **Python (FastAPI)** backend, backed by **Amazon DynamoDB**. Features a portfolio showcase, blog with comments, and role-based access control.
 
@@ -25,7 +25,7 @@ PersonalWebSite/
 │   ├── DATABASE_DESIGN.md       # DynamoDB 5-table schema
 │   ├── DEPLOYMENT.md            # Docker setup, env vars, seed admin
 │   ├── CODEBASE_GUIDE.md        # Folder-by-folder developer orientation
-│   └── CHANGELOG.md             # Version history (1.0.0 → 1.3.0)
+│   └── CHANGELOG.md             # Version history (1.0.0 → 1.4.0)
 ├── backend-service/             # Python FastAPI backend
 │   ├── app/
 │   │   ├── config/              # Settings (pydantic-settings), DB client
@@ -41,7 +41,7 @@ PersonalWebSite/
 ├── frontend-portal/             # React SPA frontend
 │   ├── src/
 │   │   ├── components/layout/   # Navbar, Footer
-│   │   ├── pages/               # Home, Experience, Projects, Blog, Login
+│   │   ├── pages/               # Home, Experience (+ admin CRUD), Projects (+ admin CRUD), Blog (+ edit), Login
 │   │   ├── services/api.ts      # Axios API client + error utilities
 │   │   ├── context/             # AuthContext (user, isAdmin — token in httpOnly cookie)
 │   │   └── theme/               # MUI dark theme
@@ -89,10 +89,12 @@ Source code is volume-mapped into Docker containers. Edit files locally and chan
 ## Features
 
 - **Portfolio Showcase**: Experience timeline, project cards, skills overview
-- **Blog System**: Public read, admin-only write, markdown content
+- **Admin CRUD**: Create, edit, and delete experiences and projects from the frontend (admin only)
+- **Blog System**: Public read, admin-only write with full edit support, Markdown rendering (GFM)
 - **Comment System**: Any logged-in user can comment; owner/admin can delete
 - **User Registration**: Open registration, role-based access (admin vs user)
 - **JWT Authentication**: bcrypt passwords, HS256 tokens in httpOnly cookies (XSS-safe)
+- **Internationalization**: English / Chinese language toggle via react-i18next
 - **Responsive Design**: Mobile-first dark theme with Material UI
 - **API Documentation**: Auto-generated Swagger/ReDoc via FastAPI
 
@@ -104,6 +106,7 @@ Source code is volume-mapped into Docker containers. Edit files locally and chan
 | Post comments         | No        | Yes  | Yes   |
 | Delete own comments   | —         | Yes  | Yes   |
 | Manage blog/content   | No        | No   | Yes   |
+| Manage experience/projects | No   | No   | Yes   |
 
 ## Documentation
 
@@ -114,7 +117,7 @@ Source code is volume-mapped into Docker containers. Edit files locally and chan
 | [Database Design](docs/DATABASE_DESIGN.md) | 5 DynamoDB tables with schemas, access patterns, seed data |
 | [Deployment](docs/DEPLOYMENT.md) | Docker setup, env vars, volume mounts, hot-reload, production checklist |
 | [Codebase Guide](docs/CODEBASE_GUIDE.md) | Folder-by-folder explanation of backend & frontend structure |
-| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.3.0) |
+| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.4.0) |
 
 ## License
 

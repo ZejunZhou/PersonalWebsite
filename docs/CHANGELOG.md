@@ -2,6 +2,27 @@
 
 > All notable changes to this project are documented here.
 
+## [1.4.0] - 2026-02-20
+
+### Added
+- **Blog Edit Page** (`BlogEditPage.tsx`): Admins can now edit existing blog posts via a pre-filled form at `/blog/:postId/edit`
+- **Experience Admin CRUD**: New `ExperienceCreatePage` and `ExperienceEditPage` pages; ExperiencePage now shows Add/Edit/Delete buttons for admins
+- **Project Admin CRUD**: New `ProjectCreatePage` and `ProjectEditPage` pages; ProjectsPage now shows Add/Edit/Delete buttons for admins
+- **Markdown Rendering**: Blog post content is now rendered as Markdown using `react-markdown` + `remark-gfm` with styled headings, code blocks, tables, blockquotes, and links
+- **New i18n Keys**: Added `blogEdit.*`, `expAdmin.*`, `projAdmin.*` translation keys to both `en.json` and `zh.json`
+- **New Routes**: `/blog/:postId/edit`, `/experience/new`, `/experience/:id/edit`, `/projects/new`, `/projects/:id/edit`
+
+### Changed
+- `BlogDetailPage.tsx`: Added Edit button (admin only) next to delete button; content now rendered via ReactMarkdown with GFM support
+- `ExperiencePage.tsx`: Added admin CRUD buttons (Add Experience, Edit, Delete per card)
+- `ProjectsPage.tsx`: Added admin CRUD buttons (Add Project, Edit, Delete per card)
+- `App.tsx`: Added 5 new routes for all create/edit pages
+
+### Dependencies
+- Added `react-markdown`, `remark-gfm` to frontend
+
+---
+
 ## [1.3.0] - 2026-02-19
 
 ### Security

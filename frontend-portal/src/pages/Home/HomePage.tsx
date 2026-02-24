@@ -16,13 +16,32 @@ import StorageIcon from "@mui/icons-material/Storage";
 import WebIcon from "@mui/icons-material/Web";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import EmailIcon from "@mui/icons-material/Email";
+import CodeIcon from "@mui/icons-material/Code";
+import BuildIcon from "@mui/icons-material/Build";
+import LayersIcon from "@mui/icons-material/Layers";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import personImg from "../../images/person.png";
 
-const SKILLS = [
-  "Python", "Java", "Go", "TypeScript", "React", "FastAPI",
-  "AWS", "Docker", "Kubernetes", "DynamoDB", "PostgreSQL", "Git",
+const SKILL_CATEGORIES = [
+  {
+    i18nKey: "languages",
+    icon: <CodeIcon sx={{ fontSize: 20, color: "primary.main" }} />,
+    color: "primary.main",
+    skills: ["Python", "Golang", "Java", "C", "SQL", "JavaScript", "HTML/CSS"],
+  },
+  {
+    i18nKey: "tools",
+    icon: <BuildIcon sx={{ fontSize: 20, color: "secondary.main" }} />,
+    color: "secondary.main",
+    skills: ["AWS","GCP","Docker", "Kubernetes", "Linux", "Git", "VS Code", "Cursor", "Claude Code"],
+  },
+  {
+    i18nKey: "frameworks",
+    icon: <LayersIcon sx={{ fontSize: 20, color: "primary.light" }} />,
+    color: "primary.light",
+    skills: ["PyTorch", "Milvus", "Flask", "React.js", "Spark", "Kafka", "Cassandra", "MySQL"],
+  },
 ];
 
 const HomePage: React.FC = () => {
@@ -184,19 +203,55 @@ const HomePage: React.FC = () => {
       {/* Skills */}
       <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.06)", py: 8 }}>
         <Container maxWidth="lg">
-          <Typography variant="h3" sx={{ mb: 4 }}>{t("home.techStack")}</Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-            {SKILLS.map((skill) => (
-              <Chip
-                key={skill} label={skill} variant="outlined"
-                sx={{
-                  borderColor: "rgba(255,255,255,0.15)", color: "text.primary",
-                  fontSize: "0.9rem", py: 2.5, px: 1,
-                  "&:hover": { borderColor: "primary.main", color: "primary.main" },
-                }}
-              />
+          <Typography variant="h3" sx={{ mb: 5 }}>{t("home.techStack")}</Typography>
+          <Grid container spacing={4}>
+            {SKILL_CATEGORIES.map((cat) => (
+              <Grid size={{ xs: 12, md: 4 }} key={cat.i18nKey}>
+                <Box
+                  sx={{
+                    p: 3,
+                    borderRadius: 2,
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    background: "rgba(255,255,255,0.02)",
+                    height: "100%",
+                    transition: "border-color 0.2s, background 0.2s",
+                    "&:hover": {
+                      borderColor: "rgba(255,255,255,0.12)",
+                      background: "rgba(255,255,255,0.04)",
+                    },
+                  }}
+                >
+                  <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
+                    {cat.icon}
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 600, color: cat.color, letterSpacing: 0.5 }}
+                    >
+                      {t(`home.skillCategory.${cat.i18nKey}`)}
+                    </Typography>
+                  </Stack>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                    {cat.skills.map((skill) => (
+                      <Chip
+                        key={skill}
+                        label={skill}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          borderColor: "rgba(255,255,255,0.12)",
+                          color: "text.primary",
+                          fontSize: "0.85rem",
+                          py: 2,
+                          px: 0.5,
+                          "&:hover": { borderColor: cat.color, color: cat.color },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         </Container>
       </Box>
 

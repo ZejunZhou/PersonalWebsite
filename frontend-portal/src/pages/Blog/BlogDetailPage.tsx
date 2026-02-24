@@ -4,10 +4,13 @@ import {
   IconButton, TextField, Card, CardContent, Divider, Avatar,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useAuth } from "../../context/AuthContext";
 import apiClient from "../../services/api";
 
@@ -123,9 +126,14 @@ const BlogDetailPage: React.FC = () => {
             {t("blog.backToBlog")}
           </Button>
           {isAdmin && (
-            <IconButton onClick={handleDeletePost} sx={{ color: "error.main" }}>
-              <DeleteIcon />
-            </IconButton>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <IconButton onClick={() => navigate(`/blog/${postId}/edit`)} sx={{ color: "primary.main" }}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={handleDeletePost} sx={{ color: "error.main" }}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
           )}
         </Box>
 
@@ -142,8 +150,26 @@ const BlogDetailPage: React.FC = () => {
           {new Date(post.created_at).toLocaleDateString(dateLocale, { year: "numeric", month: "long", day: "numeric" })}
         </Typography>
 
-        <Box sx={{ whiteSpace: "pre-wrap", lineHeight: 1.8, color: "text.secondary", mb: 6 }}>
-          {post.content}
+        <Box
+          sx={{
+            lineHeight: 1.8, color: "text.secondary", mb: 6,
+            "& h1,& h2,& h3,& h4": { color: "text.primary", mt: 3, mb: 1.5 },
+            "& p": { mb: 2 },
+            "& ul,& ol": { pl: 3, mb: 2 },
+            "& li": { mb: 0.5 },
+            "& code": { bgcolor: "rgba(255,255,255,0.06)", px: 0.8, py: 0.2, borderRadius: 0.5, fontSize: "0.9em", fontFamily: "monospace" },
+            "& pre": { bgcolor: "rgba(255,255,255,0.04)", p: 2, borderRadius: 1, overflow: "auto", mb: 2 },
+            "& pre code": { bgcolor: "transparent", p: 0 },
+            "& blockquote": { borderLeft: "3px solid", borderColor: "primary.dark", pl: 2, ml: 0, color: "text.secondary", fontStyle: "italic" },
+            "& table": { width: "100%", borderCollapse: "collapse", mb: 2 },
+            "& th,& td": { border: "1px solid rgba(255,255,255,0.12)", px: 1.5, py: 1 },
+            "& th": { bgcolor: "rgba(255,255,255,0.04)" },
+            "& a": { color: "primary.main", textDecoration: "underline" },
+            "& img": { maxWidth: "100%", borderRadius: 1 },
+            "& hr": { borderColor: "rgba(255,255,255,0.08)", my: 3 },
+          }}
+        >
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
         </Box>
 
         <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mb: 4 }} />
