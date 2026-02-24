@@ -20,6 +20,7 @@ services:
     volumes:
       - ./backend-service:/app
     environment:
+      - DEPLOY_ENV=local
       - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=local

@@ -2,6 +2,24 @@
 
 > All notable changes to this project are documented here.
 
+## [1.6.0] - 2026-02-23
+
+### Added
+- **AWS Lambda deployment**: `handler.py` (Mangum adapter) + `scripts/deploy-lambda.sh` interactive deploy script for Lambda + Function URL
+- **`DEPLOY_ENV` toggle**: Single env var (`local` / `cloud`) controls DynamoDB client mode — local uses explicit endpoint + dummy creds, cloud uses default boto3 credential chain (IAM role)
+
+### Changed
+- **`settings.py`**: Added `deploy_env` field with `is_cloud` property; all sensitive defaults clearly marked for override
+- **`database.py`**: Branches on `settings.is_cloud` — cloud mode skips `endpoint_url` and uses IAM role credentials
+- **`seed_db.py`**: Detects `DEPLOY_ENV=cloud` and skips Docker wait loop; verifies cloud connectivity directly
+- **`docker-compose.yml`**: Now explicitly sets `DEPLOY_ENV=local`
+- **`.gitignore`**: Added `lambda.zip` and `.build/` artifacts
+
+### Documentation
+- Rewrote `DEPLOYMENT.md` with full cloud deployment guide, free tier reference, and updated production checklist
+
+---
+
 ## [1.5.0] - 2026-02-23
 
 ### Added

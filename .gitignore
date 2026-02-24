@@ -38,3 +38,8 @@ htmlcov/
 .coverage
 .pytest_cache/
 coverage/
+
+# Lambda build artifacts
+backend-service/.build/
+backend-service/lambda.zip
+lambda.zip

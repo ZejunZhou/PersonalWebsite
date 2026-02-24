@@ -12,7 +12,7 @@ A full-stack personal website built with a **React** frontend and **Python (Fast
 | Backend    | Python 3.11+, FastAPI, Pydantic v2      |
 | Database   | Amazon DynamoDB (Local via Docker)       |
 | Auth       | JWT (HS256, bcrypt, httpOnly cookie)      |
-| DevOps     | Docker, Docker Compose (volume mounts)   |
+| DevOps     | Docker, Docker Compose, AWS Lambda       |
 | Icons      | Font Awesome 6, MUI Icons               |
 
 ## Project Structure
@@ -25,7 +25,7 @@ PersonalWebSite/
 │   ├── DATABASE_DESIGN.md       # DynamoDB 5-table schema + GSIs
 │   ├── DEPLOYMENT.md            # Docker setup, env vars, seed admin
 │   ├── CODEBASE_GUIDE.md        # Folder-by-folder developer orientation
-│   └── CHANGELOG.md             # Version history (1.0.0 → 1.5.0)
+│   └── CHANGELOG.md             # Version history (1.0.0 → 1.6.0)
 ├── backend-service/             # Python FastAPI backend
 │   ├── app/
 │   │   ├── config/              # Settings (pydantic-settings), DB client
@@ -117,7 +117,7 @@ Source code is volume-mapped into Docker containers. Edit files locally and chan
 | [Database Design](docs/DATABASE_DESIGN.md) | 5 DynamoDB tables with schemas, 2 GSIs, access patterns, pagination design |
 | [Deployment](docs/DEPLOYMENT.md) | Docker setup, env vars, volume mounts, hot-reload, production checklist |
 | [Codebase Guide](docs/CODEBASE_GUIDE.md) | Folder-by-folder explanation of backend & frontend structure |
-| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.5.0) |
+| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.6.0) |
 
 ## License
 

@@ -3,6 +3,7 @@ Database seed script — creates DynamoDB tables and inserts initial data.
 Fully idempotent: safe to run multiple times without duplicating data.
   - Tables: uses DescribeTable to skip existing tables.
   - Rows:   uses deterministic UUIDs + ConditionExpression to skip existing items.
+Works with both local (Docker) and cloud DynamoDB via DEPLOY_ENV env var.
 Run: python scripts/seed_db.py
 """
 
@@ -18,7 +19,7 @@ from botocore.exceptions import ClientError
 
 
 def wait_for_dynamodb(max_retries=30, delay=2):
-    """Block until DynamoDB is reachable, retrying with backoff."""
+    """Block until local DynamoDB Docker container is reachable."""
     from app.config.database import db_client
     for attempt in range(1, max_retries + 1):
         try:
@@ -31,7 +32,18 @@ def wait_for_dynamodb(max_retries=30, delay=2):
     raise RuntimeError("DynamoDB did not become available in time.")
 
 
-wait_for_dynamodb()
+deploy_env = os.environ.get("DEPLOY_ENV", "local")
+
+if deploy_env == "cloud":
+    from app.config.database import db_client
+    print("  Cloud DynamoDB mode — verifying connectivity...")
+    try:
+        list(db_client.resource.tables.all())
+        print("  Cloud DynamoDB is reachable.")
+    except Exception as e:
+        raise RuntimeError(f"Cannot reach cloud DynamoDB: {e}")
+else:
+    wait_for_dynamodb()
 
 from passlib.context import CryptContext
 from app.config.database import db_client
