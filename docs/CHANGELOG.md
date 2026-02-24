@@ -2,6 +2,25 @@
 
 > All notable changes to this project are documented here.
 
+## [1.7.0] - 2026-02-24
+
+### Added
+- **GitHub Pages deployment**: Frontend React app deployed to `https://ZejunZhou.github.io/PersonalWebsite` via GitHub Actions workflow
+- **GitHub Actions workflow** (`.github/workflows/deploy-frontend.yml`): Automated build + deploy on push to `main` (when `frontend-portal/` changes) or manual trigger; injects `REACT_APP_API_URL` from repo variables
+- **SPA routing on GitHub Pages**: `npm run build` now copies `index.html` to `404.html` so React Router handles all paths
+
+### Changed
+- **`package.json`**: Added `homepage` field for CRA subpath asset resolution; updated `build` script to generate `404.html`
+- **`App.tsx`**: `BrowserRouter` now uses `basename={process.env.PUBLIC_URL}` for subpath routing under `/PersonalWebsite/`
+- **`api.ts`**: 401 redirect now includes `PUBLIC_URL` prefix to work correctly on GitHub Pages
+- **`manifest.json`**: Updated app name and theme color; replaced default CRA icons with custom SVG favicon
+
+### Documentation
+- Updated `DEPLOYMENT.md` with full GitHub Pages deployment guide and GitHub Actions setup instructions
+- Updated production checklist to reflect frontend deployment completion
+
+---
+
 ## [1.6.0] - 2026-02-23
 
 ### Added

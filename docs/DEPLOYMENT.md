@@ -1,6 +1,6 @@
 # Deployment Guide
 
-> Last updated: 2026-02-23
+> Last updated: 2026-02-24
 
 ## Full Stack Launch (Docker Compose)
 
@@ -236,6 +236,60 @@ JWT_SECRET_KEY=<your-key> ADMIN_EMAILS=you@example.com CORS_ORIGINS=https://your
 
 ---
 
+## Frontend Deployment (GitHub Pages)
+
+### Architecture
+
+```
+Browser → GitHub Pages (static) → React SPA
+   │
+   └─ API calls → Lambda Function URL (HTTPS) → FastAPI → Cloud DynamoDB
+```
+
+The frontend is a static React build deployed to GitHub Pages via GitHub Actions. The backend API URL is injected at build time via the `REACT_APP_API_URL` environment variable.
+
+### How It Works
+
+- **`homepage`** in `package.json` is set to `https://ZejunZhou.github.io/PersonalWebsite`, which tells CRA to generate asset paths relative to that subpath.
+- **`BrowserRouter`** uses `basename={process.env.PUBLIC_URL}` so all routes work under `/PersonalWebsite/`.
+- **`404.html`** is a copy of `index.html`, generated during `npm run build`. When GitHub Pages encounters an unknown path (e.g. `/PersonalWebsite/blog/123`), it serves `404.html`, which boots React Router and renders the correct route.
+
+### GitHub Actions Workflow
+
+File: `.github/workflows/deploy-frontend.yml`
+
+**Triggers:**
+- Push to `main` when any file in `frontend-portal/` changes
+- Manual trigger via `workflow_dispatch`
+
+**Required setup in GitHub repo settings:**
+
+1. Go to **Settings → Pages → Source** → select **GitHub Actions**
+2. Go to **Settings → Variables and secrets → Actions → Variables** → add:
+
+| Variable | Value | Example |
+|----------|-------|---------|
+| `REACT_APP_API_URL` | Your Lambda Function URL | `https://abc123.lambda-url.us-east-1.on.aws` |
+
+### Manual Deploy (without GitHub Actions)
+
+```bash
+cd frontend-portal
+REACT_APP_API_URL=https://your-lambda-url.on.aws npm run build
+npx gh-pages -d build
+```
+
+This builds the app and pushes the `build/` folder to the `gh-pages` branch.
+
+### Connecting Frontend to Backend
+
+After deploying the backend to Lambda (see above), update two things:
+
+1. **`REACT_APP_API_URL`**: Set to your Lambda Function URL in GitHub repo variables
+2. **`CORS_ORIGINS`**: In your Lambda environment, set to `https://ZejunZhou.github.io` (the GitHub Pages origin)
+
+---
+
 ## Production Checklist
 
 - [x] ~~GSIs for `Comments.post_id` and `Users.email`~~ — implemented in v1.5.0
@@ -243,9 +297,9 @@ JWT_SECRET_KEY=<your-key> ADMIN_EMAILS=you@example.com CORS_ORIGINS=https://your
 - [x] ~~Paginated scans with Limit + cursor~~ — implemented in v1.5.0
 - [x] ~~Idempotent seed script~~ — implemented in v1.5.0
 - [x] ~~Lambda deployment support~~ — implemented in v1.6.0
+- [x] ~~Deploy frontend to GitHub Pages~~ — implemented in v1.7.0
 - [ ] Set `JWT_SECRET_KEY` to a strong random secret (`openssl rand -hex 32`)
-- [ ] Set `CORS_ORIGINS` to production frontend URL
-- [ ] Deploy frontend to S3 + CloudFront (or Vercel/Netlify)
+- [ ] Set `CORS_ORIGINS` to production frontend URL (`https://ZejunZhou.github.io`)
 - [ ] Add rate limiting middleware
 - [ ] Set up CloudWatch alarms / structured logging
 - [ ] Consider custom domain with Route 53 + ACM certificate

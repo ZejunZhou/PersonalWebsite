@@ -29,7 +29,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
             <Navbar />
             <Box component="main" sx={{ flex: 1 }}>

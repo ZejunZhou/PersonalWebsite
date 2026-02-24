@@ -17,8 +17,10 @@ class ApiClient {
       (error) => {
         if (error.response?.status === 401) {
           localStorage.removeItem("user");
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
+          const base = process.env.PUBLIC_URL || "";
+          const loginPath = `${base}/login`;
+          if (window.location.pathname !== loginPath) {
+            window.location.href = loginPath;
           }
         }
         return Promise.reject(error);
