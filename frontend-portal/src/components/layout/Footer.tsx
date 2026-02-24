@@ -23,10 +23,10 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} {t("footer.builtWith")}
           </Typography>
           <Stack direction="row" spacing={1}>
-            <IconButton href="https://github.com/zhouzejun" target="_blank" size="small" sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}>
+            <IconButton href="https://github.com/ZejunZhou" target="_blank" size="small" sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}>
               <FontAwesomeIcon icon={faGithub} />
             </IconButton>
-            <IconButton href="https://linkedin.com/in/zhouzejun" target="_blank" size="small" sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}>
+            <IconButton href="https://www.linkedin.com/in/zejun-zhou" target="_blank" size="small" sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}>
               <FontAwesomeIcon icon={faLinkedin} />
             </IconButton>
             <IconButton href="mailto:zhouzejun1147@gmail.com" size="small" sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}>
