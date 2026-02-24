@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Depends, Query
 
 from app.models.comment import CommentCreate, CommentResponse, CommentListResponse
 from app.services.comment_service import comment_service
@@ -9,10 +11,16 @@ router = APIRouter(prefix="/api/blog/{post_id}/comments", tags=["Comments"])
 
 
 @router.get("", response_model=CommentListResponse)
-async def list_comments(post_id: str):
-    """Public — list all comments for a blog post."""
-    comments = comment_service.get_by_post(post_id)
-    return CommentListResponse(comments=comments, count=len(comments))
+async def list_comments(
+    post_id: str,
+    limit: int = Query(50, ge=1, le=200),
+    cursor: Optional[str] = None,
+):
+    """Public — list comments for a blog post (paginated via GSI query)."""
+    comments, next_cursor = comment_service.get_by_post(
+        post_id, limit=limit, cursor=cursor
+    )
+    return CommentListResponse(comments=comments, count=len(comments), next_cursor=next_cursor)
 
 
 @router.post("", response_model=CommentResponse, status_code=201)

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 from app.services.base_service import BaseService
 from app.models.blog import BlogPostCreate, BlogPostUpdate
@@ -35,17 +35,28 @@ class BlogService(BaseService):
         updates["updated_at"] = datetime.utcnow().isoformat()
         return self.update(post_id, updates)
 
-    def get_published_posts(self) -> List[Dict[str, Any]]:
-        response = self.table.scan(
+    def get_published_posts(
+        self, *, limit: int = 25, cursor: Optional[str] = None
+    ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """Paginated scan filtered to published posts only.
+        DynamoDB Limit applies before the filter, so a page may return
+        fewer than `limit` items — callers should check next_cursor."""
+        items, next_cursor = self.scan_page(
+            limit=limit,
+            cursor=cursor,
             FilterExpression="is_published = :pub",
             ExpressionAttributeValues={":pub": True},
         )
-        items = response.get("Items", [])
-        return sorted(items, key=lambda x: x.get("created_at", ""), reverse=True)
+        items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return items, next_cursor
 
-    def get_all_posts(self) -> List[Dict[str, Any]]:
-        items = self.get_all()
-        return sorted(items, key=lambda x: x.get("created_at", ""), reverse=True)
+    def get_all_posts(
+        self, *, limit: int = 25, cursor: Optional[str] = None
+    ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """Paginated scan of all posts (admin only)."""
+        items, next_cursor = self.scan_page(limit=limit, cursor=cursor)
+        items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return items, next_cursor
 
 
 blog_service = BlogService()

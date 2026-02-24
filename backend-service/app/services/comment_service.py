@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
+
+from boto3.dynamodb.conditions import Key
 
 from app.services.base_service import BaseService
 from app.models.comment import CommentCreate
@@ -30,13 +32,17 @@ class CommentService(BaseService):
         }
         return self.create(item)
 
-    def get_by_post(self, post_id: str) -> List[Dict[str, Any]]:
-        response = self.table.scan(
-            FilterExpression="post_id = :pid",
-            ExpressionAttributeValues={":pid": post_id},
+    def get_by_post(
+        self, post_id: str, *, limit: int = 50, cursor: Optional[str] = None
+    ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        """Query GSI gsi_post_id — O(comments-for-post), not O(all-comments)."""
+        return self.query_index(
+            index_name="gsi_post_id",
+            key_condition=Key("post_id").eq(post_id),
+            limit=limit,
+            cursor=cursor,
+            scan_forward=True,
         )
-        items = response.get("Items", [])
-        return sorted(items, key=lambda x: x.get("created_at", ""))
 
     def delete_comment(self, comment_id: str, user_id: str, is_admin: bool) -> bool:
         comment = self.get_by_id(comment_id)

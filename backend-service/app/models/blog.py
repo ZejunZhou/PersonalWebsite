@@ -36,3 +36,4 @@ class BlogPostResponse(BlogPostBase):
 class BlogPostListResponse(BaseModel):
     posts: List[BlogPostResponse]
     count: int
+    next_cursor: Optional[str] = None

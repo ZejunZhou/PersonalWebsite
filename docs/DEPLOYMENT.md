@@ -1,6 +1,6 @@
 # Deployment Guide
 
-> Last updated: 2026-02-19
+> Last updated: 2026-02-23
 
 ## Full Stack Launch (Docker Compose)
 
@@ -42,7 +42,7 @@ The backend's CMD is:
 python scripts/seed_db.py && uvicorn main:app --host 0.0.0.0 --port 8080 --reload
 ```
 
-The seed script retries connecting to DynamoDB (up to 30 attempts, 2s apart) before creating tables and inserting data.
+The seed script is **fully idempotent** — it retries connecting to DynamoDB (up to 30 attempts, 2s apart), uses `DescribeTable` to skip existing tables, and conditional `put_item` with deterministic UUIDs to skip existing rows. Safe to run multiple times.
 
 ### Hot-Reload (Volume Mounts)
 
@@ -173,4 +173,4 @@ npm install && npm start
 - [ ] Enable HTTPS (TLS termination via ALB or Nginx)
 - [ ] Add rate limiting middleware
 - [ ] Set up CloudWatch / structured logging
-- [ ] Consider GSIs for `Comments.post_id` and `BlogPosts.is_published` if data grows
+- [x] ~~Consider GSIs for `Comments.post_id` and `Users.email`~~ — implemented in v1.5.0 (`gsi_post_id`, `gsi_email`)

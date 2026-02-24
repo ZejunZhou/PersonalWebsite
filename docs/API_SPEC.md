@@ -1,6 +1,6 @@
 # API Specification
 
-> Last updated: 2026-02-19
+> Last updated: 2026-02-23
 
 **Base URL**: `http://localhost:8080`
 **Interactive Docs**: `http://localhost:8080/docs` (Swagger UI) | `http://localhost:8080/redoc` (ReDoc)
@@ -202,14 +202,33 @@ List all projects, ordered by `order` field.
 ## Blog (Public Read, Admin Write)
 
 ### GET `/api/blog`
-List published blog posts, newest first.
+List published blog posts, newest first. **Paginated.**
 
 **Auth**: None (public)
 
+**Query Params**:
+
+| Param    | Type   | Default | Range   | Description                                    |
+|----------|--------|---------|---------|------------------------------------------------|
+| `limit`  | int    | 25      | 1–100   | Max items per page                             |
+| `cursor` | string | —       | —       | Opaque cursor from a previous `next_cursor`    |
+
+**Response** `200`:
+```json
+{
+  "posts": [ ... ],
+  "count": 10,
+  "next_cursor": "eyJwb3N0X2lkIjogIjEyMyJ9"
+}
+```
+`next_cursor` is `null` when there are no more pages. Note: DynamoDB `Limit` applies before the `is_published` filter, so a page may return fewer than `limit` items while `next_cursor` is still non-null.
+
 ### GET `/api/blog/all`
-List all posts including drafts.
+List all posts including drafts. **Paginated.**
 
 **Auth**: `require_admin`
+
+**Query Params**: Same as `GET /api/blog` (`limit`, `cursor`).
 
 ### GET `/api/blog/{post_id}`
 Get a single blog post.
@@ -243,9 +262,16 @@ Create a new blog post.
 ## Comments (Public Read, Auth Write)
 
 ### GET `/api/blog/{post_id}/comments`
-List all comments for a blog post, oldest first.
+List comments for a blog post, oldest first. **Paginated via GSI query** (not a full-table scan).
 
 **Auth**: None (public)
+
+**Query Params**:
+
+| Param    | Type   | Default | Range   | Description                                    |
+|----------|--------|---------|---------|------------------------------------------------|
+| `limit`  | int    | 50      | 1–200   | Max items per page                             |
+| `cursor` | string | —       | —       | Opaque cursor from a previous `next_cursor`    |
 
 **Response** `200`:
 ```json
@@ -261,7 +287,8 @@ List all comments for a blog post, oldest first.
       "created_at": "2026-02-19T12:00:00"
     }
   ],
-  "count": 1
+  "count": 1,
+  "next_cursor": null
 }
 ```
 

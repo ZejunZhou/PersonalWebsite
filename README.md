@@ -1,6 +1,6 @@
 # Personal Website — Portfolio & Blog Platform
 
-> Last updated: 2026-02-20
+> Last updated: 2026-02-23
 
 A full-stack personal website built with a **React** frontend and **Python (FastAPI)** backend, backed by **Amazon DynamoDB**. Features a portfolio showcase, blog with comments, and role-based access control.
 
@@ -22,10 +22,10 @@ PersonalWebSite/
 ├── docs/                        # Development documentation
 │   ├── ARCHITECTURE.md          # System design, auth flow, permission model
 │   ├── API_SPEC.md              # REST API specification (all endpoints)
-│   ├── DATABASE_DESIGN.md       # DynamoDB 5-table schema
+│   ├── DATABASE_DESIGN.md       # DynamoDB 5-table schema + GSIs
 │   ├── DEPLOYMENT.md            # Docker setup, env vars, seed admin
 │   ├── CODEBASE_GUIDE.md        # Folder-by-folder developer orientation
-│   └── CHANGELOG.md             # Version history (1.0.0 → 1.4.0)
+│   └── CHANGELOG.md             # Version history (1.0.0 → 1.5.0)
 ├── backend-service/             # Python FastAPI backend
 │   ├── app/
 │   │   ├── config/              # Settings (pydantic-settings), DB client
@@ -70,7 +70,7 @@ docker compose up --build
 | Backend   | `http://localhost:8080`    | FastAPI (Swagger at `/docs`)         |
 | DynamoDB  | `http://localhost:8000`    | Local DynamoDB (in-memory)           |
 
-The backend auto-creates 5 DynamoDB tables and seeds experience/project/blog data + an admin account on startup.
+The backend auto-creates 5 DynamoDB tables (including 2 GSIs) and seeds experience/project/blog data + an admin account on startup. The seed script is idempotent — safe to run multiple times.
 
 ### Seed Admin Setup
 
@@ -114,10 +114,10 @@ Source code is volume-mapped into Docker containers. Edit files locally and chan
 |----------|---------------|
 | [Architecture](docs/ARCHITECTURE.md) | System diagram, OOP patterns, JWT flow, permission model, cookie auth |
 | [API Spec](docs/API_SPEC.md) | All REST endpoints with request/response examples, auth middleware reference |
-| [Database Design](docs/DATABASE_DESIGN.md) | 5 DynamoDB tables with schemas, access patterns, seed data |
+| [Database Design](docs/DATABASE_DESIGN.md) | 5 DynamoDB tables with schemas, 2 GSIs, access patterns, pagination design |
 | [Deployment](docs/DEPLOYMENT.md) | Docker setup, env vars, volume mounts, hot-reload, production checklist |
 | [Codebase Guide](docs/CODEBASE_GUIDE.md) | Folder-by-folder explanation of backend & frontend structure |
-| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.4.0) |
+| [Changelog](docs/CHANGELOG.md) | Version history with all changes (1.0.0 → 1.5.0) |
 
 ## License
 

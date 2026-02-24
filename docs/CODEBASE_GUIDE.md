@@ -1,6 +1,6 @@
 # Codebase Guide — Folder-by-Folder
 
-> Last updated: 2026-02-20
+> Last updated: 2026-02-23
 >
 > This document explains every folder and key file in the project so a new developer can orient quickly.
 
@@ -61,17 +61,23 @@ backend-service/
 │   │
 │   ├── services/              # ── Business Logic Layer (OOP) ──
 │   │   │                      # All domain logic lives here. Controllers call services.
-│   │   ├── base_service.py    # Abstract base class: generic get/create/update/delete
-│   │   │                      # for any DynamoDB table. Subclasses define table_name
-│   │   │                      # and key_field. Builds UpdateExpression dynamically.
+│   │   ├── base_service.py    # Abstract base class providing:
+│   │   │                      #   get_by_id()    — point read (O(1))
+│   │   │                      #   create/update/delete — standard writes
+│   │   │                      #   scan_page()    — paginated scan (Limit + cursor)
+│   │   │                      #   scan_all()     — drain all pages (small tables only)
+│   │   │                      #   query_index()  — GSI query with pagination
+│   │   │                      # Also provides encode_cursor/decode_cursor helpers.
 │   │   ├── auth_service.py    # Standalone (not BaseService). Handles register, login,
-│   │   │                      # bcrypt hashing/verify, JWT create/verify. Singleton.
+│   │   │                      # bcrypt hashing/verify, JWT create/verify.
+│   │   │                      # Email lookup via GSI query (gsi_email).
 │   │   ├── blog_service.py    # Extends BaseService. create_post, update_post,
-│   │   │                      # get_published_posts, get_all_posts.
-│   │   ├── comment_service.py # Extends BaseService. create_comment, get_by_post,
-│   │   │                      # delete_comment (with owner/admin permission check).
-│   │   ├── experience_service.py  # Extends BaseService. get_ordered, create/update.
-│   │   └── project_service.py     # Extends BaseService. get_ordered, create/update.
+│   │   │                      # get_published_posts (paginated scan + filter),
+│   │   │                      # get_all_posts (paginated scan).
+│   │   ├── comment_service.py # Extends BaseService. create_comment, delete_comment,
+│   │   │                      # get_by_post (GSI query on gsi_post_id).
+│   │   ├── experience_service.py  # Extends BaseService. get_ordered (scan_all + sort).
+│   │   └── project_service.py     # Extends BaseService. get_ordered (scan_all + sort).
 │   │
 │   ├── controllers/           # ── Route Handlers (API Endpoints) ──
 │   │   │                      # Thin layer: parse request → call service → return response.
@@ -96,8 +102,10 @@ backend-service/
 │       └── (empty)            # Reserved for future helpers (e.g. pagination, S3 upload)
 │
 ├── scripts/
-│   └── seed_db.py             # Run at container startup. Waits for DynamoDB,
-│                              # creates all 5 tables, inserts seed admin + data.
+│   └── seed_db.py             # Fully idempotent. Run at container startup.
+│                              # Waits for DynamoDB, creates tables (DescribeTable
+│                              # check), inserts seed data (conditional puts with
+│                              # deterministic UUIDs). Safe to run multiple times.
 │
 └── tests/                     # Reserved for pytest unit/integration tests
     └── __init__.py
@@ -105,9 +113,11 @@ backend-service/
 
 ### Key patterns to understand:
 
-1. **Service inheritance**: `BlogService(BaseService)` — only needs to define `table_name`, `key_field`, and domain methods. Generic CRUD is inherited.
-2. **Dependency injection**: Controllers use `admin=Depends(require_admin)` to guard endpoints. The resolved payload (`{ sub, email, role, display_name }`) is passed as a parameter.
-3. **Cookie auth**: `_extract_token()` in middleware reads the `access_token` httpOnly cookie. Falls back to Bearer header for API testing tools (Swagger, curl).
+1. **Service inheritance**: `BlogService(BaseService)` — only needs to define `table_name`, `key_field`, and domain methods. Paginated scan/query operations are inherited.
+2. **No unbounded scans**: All scan operations use `Limit` + `ExclusiveStartKey`. `scan_all()` is reserved for tiny tables (experiences, projects). Blog and comment listing use `scan_page()` or `query_index()` with cursor-based pagination.
+3. **GSI queries**: `auth_service` uses `gsi_email` for O(1) email lookup. `comment_service` uses `gsi_post_id` to scope queries to a single post.
+4. **Dependency injection**: Controllers use `admin=Depends(require_admin)` to guard endpoints. The resolved payload (`{ sub, email, role, display_name }`) is passed as a parameter.
+5. **Cookie auth**: `_extract_token()` in middleware reads the `access_token` httpOnly cookie. Falls back to Bearer header for API testing tools (Swagger, curl).
 
 ---
 

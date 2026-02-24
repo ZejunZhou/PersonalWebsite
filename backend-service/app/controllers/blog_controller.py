@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Depends, Query
 
 from app.models.blog import BlogPostCreate, BlogPostUpdate, BlogPostResponse, BlogPostListResponse
 from app.services.blog_service import blog_service
@@ -8,17 +10,24 @@ router = APIRouter(prefix="/api/blog", tags=["Blog"])
 
 
 @router.get("", response_model=BlogPostListResponse)
-async def list_posts():
-    """Public — list all published blog posts."""
-    posts = blog_service.get_published_posts()
-    return BlogPostListResponse(posts=posts, count=len(posts))
+async def list_posts(
+    limit: int = Query(25, ge=1, le=100),
+    cursor: Optional[str] = None,
+):
+    """Public — list published blog posts (paginated)."""
+    posts, next_cursor = blog_service.get_published_posts(limit=limit, cursor=cursor)
+    return BlogPostListResponse(posts=posts, count=len(posts), next_cursor=next_cursor)
 
 
 @router.get("/all", response_model=BlogPostListResponse)
-async def list_all_posts(admin=Depends(require_admin)):
-    """Admin only — list all posts including drafts."""
-    posts = blog_service.get_all_posts()
-    return BlogPostListResponse(posts=posts, count=len(posts))
+async def list_all_posts(
+    limit: int = Query(25, ge=1, le=100),
+    cursor: Optional[str] = None,
+    admin=Depends(require_admin),
+):
+    """Admin only — list all posts including drafts (paginated)."""
+    posts, next_cursor = blog_service.get_all_posts(limit=limit, cursor=cursor)
+    return BlogPostListResponse(posts=posts, count=len(posts), next_cursor=next_cursor)
 
 
 @router.get("/{post_id}", response_model=BlogPostResponse)

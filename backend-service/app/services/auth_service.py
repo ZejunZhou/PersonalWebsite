@@ -4,6 +4,7 @@ from typing import Optional, Dict, Any
 
 from jose import jwt, JWTError
 from passlib.context import CryptContext
+from boto3.dynamodb.conditions import Key
 
 from app.config.settings import settings
 from app.config.database import db_client
@@ -32,9 +33,11 @@ class AuthService:
         return jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
     def _get_user_by_email(self, email: str) -> Optional[Dict[str, Any]]:
-        response = self.table.scan(
-            FilterExpression="email = :email",
-            ExpressionAttributeValues={":email": email},
+        """GSI query on gsi_email — O(1) instead of full-table scan."""
+        response = self.table.query(
+            IndexName="gsi_email",
+            KeyConditionExpression=Key("email").eq(email),
+            Limit=1,
         )
         items = response.get("Items", [])
         return items[0] if items else None

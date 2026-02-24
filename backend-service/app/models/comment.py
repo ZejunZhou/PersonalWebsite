@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Optional
 
 
 class CommentCreate(BaseModel):
@@ -19,3 +19,4 @@ class CommentResponse(BaseModel):
 class CommentListResponse(BaseModel):
     comments: List[CommentResponse]
     count: int
+    next_cursor: Optional[str] = None

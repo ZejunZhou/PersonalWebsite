@@ -24,7 +24,8 @@ class ExperienceService(BaseService):
         return self.update(exp_id, updates)
 
     def get_ordered(self) -> List[Dict[str, Any]]:
-        items = self.get_all()
+        """Small-table full scan (experiences are bounded < 50 rows)."""
+        items = self.scan_all()
         return sorted(items, key=lambda x: int(x.get("order", 0)))
 
 

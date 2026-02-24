@@ -1,6 +1,6 @@
 # Architecture Document
 
-> Last updated: 2026-02-19
+> Last updated: 2026-02-23
 
 ## 1. System Overview
 
@@ -51,27 +51,31 @@
 
 ### 2.2 OOP Service Architecture
 
-All domain services inherit from `BaseService`, which provides generic DynamoDB CRUD:
+All domain services inherit from `BaseService`, which provides generic DynamoDB operations with enforced pagination:
 
 ```
 BaseService (ABC)
-├── get_by_id()
-├── get_all()
-├── create()
-├── update()
-├── delete()
+├── get_by_id()          # Point read — O(1), always preferred
+├── create() / update() / delete()
+├── scan_page()          # Single-page scan with Limit + cursor
+├── scan_all()           # Drain all pages — bounded small tables only
+├── query_index()        # GSI query with pagination
 │
 ├── ExperienceService
-│   └── get_ordered(), create_experience(), update_experience()
+│   └── get_ordered()  → scan_all() + sort (small table, < 50 rows)
 ├── ProjectService
-│   └── get_ordered(), create_project(), update_project()
+│   └── get_ordered()  → scan_all() + sort (small table, < 50 rows)
 ├── BlogService
-│   └── get_published_posts(), get_all_posts(), create_post(), update_post()
+│   └── get_published_posts() → scan_page() + FilterExpression
+│   └── get_all_posts()       → scan_page()
 ├── CommentService
-│   └── get_by_post(), create_comment(), delete_comment()
+│   └── get_by_post()  → query_index(gsi_post_id)  (GSI query)
 └── AuthService (standalone — does not extend BaseService)
+    └── _get_user_by_email() → query(gsi_email)  (GSI query)
     └── register(), login(), verify_token()
 ```
+
+**No unbounded scans**: Every scan uses `Limit` + `ExclusiveStartKey`. The old bare `get_all()` method has been removed.
 
 ### 2.3 User Roles & Permission Model
 
@@ -102,7 +106,7 @@ Client (Browser)            Backend (FastAPI)             DynamoDB
   │  POST /api/auth/login        │                            │
   │  { email, password }         │                            │
   │ ─────────────────────►       │                            │
-  │                              │  scan Users(email=...)     │
+  │                              │  query gsi_email(email=..) │
   │                              │ ─────────────────────►     │
   │                              │   ◄─────────────────────   │
   │                              │  verify bcrypt(password)   │
@@ -117,7 +121,7 @@ Client (Browser)            Backend (FastAPI)             DynamoDB
   │  GET /api/blog/{id}/comments │                            │
   │  (no cookie needed — public) │                            │
   │ ─────────────────────►       │                            │
-  │                              │  scan Comments(post_id=..) │
+  │                              │  query gsi_post_id(pid=..) │
   │   ◄─────────────────────     │                            │
   │  { comments: [...] }         │                            │
   │                              │                            │

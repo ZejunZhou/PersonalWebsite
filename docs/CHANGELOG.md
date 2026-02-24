@@ -2,6 +2,37 @@
 
 > All notable changes to this project are documented here.
 
+## [1.5.0] - 2026-02-23
+
+### Added
+- **GSI `gsi_email` on Users table**: Replaces full-table scan with O(1) query on every login/register
+- **GSI `gsi_post_id` on Comments table**: Queries comments by `post_id` + `created_at` sort key instead of scanning all comments
+- **Cursor-based pagination**: Blog (`GET /api/blog`, `GET /api/blog/all`) and comment (`GET /api/blog/{post_id}/comments`) endpoints now accept `?limit=&cursor=` query params and return `next_cursor` in the response
+- **`BaseService.scan_page()`**: Paginated scan with `Limit` + `ExclusiveStartKey`, forwarded as base64-encoded cursor
+- **`BaseService.scan_all()`**: Drains all pages internally — explicitly marked for bounded small tables only
+- **`BaseService.query_index()`**: GSI query helper with pagination support
+- **Brown University GRA experience**: Added as the first experience entry (Sep. 2025 – Present) with PHI extraction, RAG, RoBERTa/Llama research bullets
+- **Second blog post**: "Reducing PHI Extraction Errors with Hybrid NER and RAG"
+- **Categorized Technical Skills UI**: HomePage skills section redesigned into three columns — Languages, Cloud & Developer Tools, Frameworks/Databases — with colored icons and hover effects
+- **i18n `skillCategory.*` keys**: New translation keys for skill categories in both English and Chinese
+
+### Changed
+- **Seed script is now fully idempotent**: Uses `DescribeTable` (not `list_tables`) to check table existence; uses `ConditionExpression="attribute_not_exists(pk)"` on all inserts; deterministic UUIDs (`uuid5`) for seed data so re-runs are no-ops
+- **`auth_service._get_user_by_email()`**: Replaced full-table scan with GSI query on `gsi_email`
+- **`comment_service.get_by_post()`**: Replaced full-table scan + filter with GSI query on `gsi_post_id`
+- **`blog_service.get_published_posts/get_all_posts()`**: Now return `(items, next_cursor)` tuple with paginated scan
+- **`experience_service/project_service.get_ordered()`**: Now uses `scan_all()` (paginated internally) instead of bare `table.scan()`
+- **`BaseService`**: Removed bare `get_all()` method; replaced with `scan_page()` and `scan_all()`
+- **`BlogPostListResponse` / `CommentListResponse`**: Added `next_cursor: Optional[str]` field
+- **Seed data**: Experience bullets updated to match latest resume; 4 experiences (was 3), 2 blog posts (was 1)
+- **Homepage `techStack` label**: Changed from "Tech Stack" to "Technical Skills" (技术技能)
+
+### Documentation
+- Rewrote `DATABASE_DESIGN.md` with GSI tables, operation pattern reference, cursor pagination notes
+- Updated all docs (ARCHITECTURE, API_SPEC, CODEBASE_GUIDE, DEPLOYMENT, README) to reflect v1.5.0 changes
+
+---
+
 ## [1.4.0] - 2026-02-20
 
 ### Added
